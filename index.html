@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CONSTRUOBRA | Calculadora de construcción</title>
+<style>
+:root{--navy:#10243a;--blue:#1769aa;--orange:#f29b38;--bg:#f3f6fa;--ink:#203044;--muted:#68798d;--line:#dce4ed;--white:#fff;--green:#16865b;--red:#bd3c3c}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+header{background:linear-gradient(120deg,#10243a,#1c527d);color:white;padding:25px max(20px,calc((100% - 1180px)/2));}
+.brand{display:flex;align-items:center;gap:13px}.logo{width:46px;height:46px;border-radius:13px;background:var(--orange);display:grid;place-items:center;color:#14283d;font-weight:900;font-size:22px}
+header h1{font-size:25px;margin:0}header p{margin:5px 0 0;color:#d7e5f2;font-size:14px}
+.wrap{max-width:1180px;margin:22px auto;padding:0 18px}.topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.project{display:flex;gap:8px;align-items:center}.project input{max-width:250px}
+nav{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:18px}
+nav button{border:1px solid var(--line);background:white;color:var(--ink);padding:11px 14px;border-radius:10px;cursor:pointer;font-weight:650}
+nav button.active{background:var(--blue);color:white;border-color:var(--blue)}
+.panel{display:none}.panel.active{display:block}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.card{background:white;border:1px solid var(--line);border-radius:15px;padding:20px;box-shadow:0 4px 16px #18324b0a}
+.card h2{font-size:18px;margin:0 0 6px}.hint{font-size:13px;color:var(--muted);margin:0 0 17px}
+.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+label{font-size:13px;font-weight:650;color:#405269;display:block;margin-bottom:6px}
+input,select{width:100%;padding:11px;border:1px solid #cbd6e2;border-radius:9px;font-size:14px;background:white;color:var(--ink)}
+input:focus,select:focus{outline:2px solid #a9d2f4;border-color:var(--blue)}
+button.primary,.btn{border:0;background:var(--blue);color:white;padding:11px 15px;border-radius:9px;font-weight:700;cursor:pointer}
+button.secondary{border:1px solid var(--line);background:white;color:var(--ink);padding:10px 13px;border-radius:9px;cursor:pointer}
+button.danger{background:#fff0f0;color:var(--red);border:1px solid #f2caca;padding:8px 10px;border-radius:8px;cursor:pointer}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:15px}
+.result{margin-top:15px;padding:14px;border-radius:11px;background:#edf6ff;border:1px solid #cfe4f7}
+.result strong{font-size:22px;color:#14558b}.result small{display:block;color:var(--muted);margin-top:4px}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.kpi{background:#f7f9fc;border:1px solid var(--line);padding:12px;border-radius:10px}.kpi span{display:block;color:var(--muted);font-size:12px}.kpi b{display:block;margin-top:5px;font-size:18px}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:12px}th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line)}th{color:#52657a;background:#f7f9fc}
+.total{font-size:23px;font-weight:800;color:var(--green);text-align:right;margin-top:14px}
+.full{grid-column:1/-1}.muted{color:var(--muted);font-size:13px}.notice{font-size:12px;color:#6a7786;background:#f8fafc;border:1px solid var(--line);padding:12px;border-radius:10px;margin-top:18px}
+.history-item{padding:10px 0;border-bottom:1px solid var(--line);font-size:13px}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:25px}
+@media(max-width:760px){.grid{grid-template-columns:1fr}.fields{grid-template-columns:1fr 1fr}.kpis{grid-template-columns:1fr}header{padding:22px 18px}}
+@media(max-width:430px){.fields{grid-template-columns:1fr}}
+@media print{header,nav,.topbar,.actions,button,.notice{display:none!important}body{background:white}.wrap{max-width:none;margin:0}.panel{display:none!important}#presupuesto{display:block!important}.card{box-shadow:none}}
+</style>
+</head>
+<body>
+<header><div class="brand"><div class="logo">CO</div><div><h1>CONSTRUOBRA</h1><p>Herramientas académicas para cálculos y presupuestos de construcción</p></div></div></header>
+<main class="wrap">
+<div class="topbar">
+ <div><b>Panel de trabajo</b><div class="muted">Calcula, organiza y estima los recursos de tu proyecto.</div></div>
+ <div class="project"><label for="projectName">Proyecto</label><input id="projectName" placeholder="Ej. Placa para vivienda" /></div>
+</div>
+<nav>
+<button class="active" data-tab="concreto">Concreto</button><button data-tab="mezcla">Materiales</button><button data-tab="ladrillos">Ladrillos</button><button data-tab="geometria">Áreas y volúmenes</button><button data-tab="presupuesto">Presupuesto</button><button data-tab="historial">Historial</button>
+</nav>
+
+<section id="concreto" class="panel active">
+<div class="grid">
+ <div class="card"><h2>Volumen de concreto</h2><p class="hint">Para placas, vigas, columnas, zapatas y elementos prismáticos rectangulares.</p>
+  <div class="fields">
+   <div><label>Largo (m)</label><input id="cL" type="number" min="0" step="any" placeholder="Ej. 5"></div>
+   <div><label>Ancho (m)</label><input id="cA" type="number" min="0" step="any" placeholder="Ej. 3"></div>
+   <div><label>Alto / espesor (m)</label><input id="cH" type="number" min="0" step="any" placeholder="Ej. 0.12"></div>
+   <div><label>Desperdicio (%)</label><input id="cD" type="number" min="0" max="100" value="5"></div>
+  </div><div class="actions"><button class="primary" onclick="calcConcrete()">Calcular volumen</button><button class="secondary" onclick="clearFields('concreto')">Limpiar</button></div>
+  <div id="concreteResult"></div>
+ </div>
+ <div class="card"><h2>Guía de fórmula</h2><p class="hint">Volumen de un prisma rectangular</p>
+ <div class="result"><strong>V = L × A × H</strong><small>Multiplica las tres dimensiones expresadas en metros para obtener m³.</small></div>
+ <p class="muted">El porcentaje de desperdicio se agrega al volumen geométrico para obtener una cantidad estimada de pedido.</p>
+ </div>
+</div></section>
+
+<section id="mezcla" class="panel"><div class="grid">
+<div class="card"><h2>Dosificación de concreto</h2><p class="hint">Estimación académica de cemento, arena y grava por volumen.</p>
+<div class="fields">
+<div><label>Volumen requerido (m³)</label><input id="mVol" type="number" min="0" step="any" placeholder="Ej. 2"></div>
+<div><label>Dosificación (cemento:arena:grava)</label><select id="mix"><option value="1,2,3">1 : 2 : 3</option><option value="1,2,4">1 : 2 : 4</option><option value="1,3,3">1 : 3 : 3</option><option value="1,2,2">1 : 2 : 2</option></select></div>
+<div><label>Factor de volumen seco</label><input id="dryFactor" type="number" min="1" step="any" value="1.54"></div>
+<div><label>Peso de cada bulto (kg)</label><input id="bag" type="number" min="1" value="50"></div>
+</div><div class="actions"><button class="primary" onclick="calcMix()">Calcular materiales</button></div><div id="mixResult"></div>
+</div>
+<div class="card"><h2>¿Cómo se estima?</h2><p class="muted">Se multiplica el volumen húmedo por un factor de volumen seco. Luego se distribuye ese volumen según las partes de la dosificación.</p><div class="result"><strong>Vol. seco = Vol. concreto × factor</strong><small>El resultado depende del diseño de mezcla, humedad, granulometría y características de los materiales.</small></div><p class="muted">No sustituye un diseño de mezcla realizado por un profesional o laboratorio.</p></div>
+</div></section>
+
+<section id="ladrillos" class="panel"><div class="grid">
+<div class="card"><h2>Cantidad de ladrillos</h2><p class="hint">Calcula unidades aproximadas para una pared, descontando puertas y ventanas.</p>
+<div class="fields">
+<div><label>Largo de pared (m)</label><input id="wL" type="number" min="0" step="any"></div><div><label>Alto de pared (m)</label><input id="wH" type="number" min="0" step="any"></div>
+<div><label>Largo ladrillo (cm)</label><input id="bL" type="number" min="1" value="20"></div><div><label>Alto ladrillo (cm)</label><input id="bH" type="number" min="1" value="10"></div>
+<div><label>Junta (cm)</label><input id="joint" type="number" min="0" value="1"></div><div><label>Área de aberturas (m²)</label><input id="openings" type="number" min="0" value="0" step="any"></div>
+<div><label>Desperdicio (%)</label><input id="brickWaste" type="number" min="0" value="5"></div>
+</div><div class="actions"><button class="primary" onclick="calcBricks()">Calcular ladrillos</button><button class="secondary" onclick="clearFields('ladrillos')">Limpiar</button></div><div id="brickResult"></div>
+</div><div class="card"><h2>Recomendación</h2><p class="muted">Mide las aberturas (puertas y ventanas) y suma sus áreas. La aplicación las descuenta del área total de la pared.</p><div class="result"><strong>Área neta ÷ área modular</strong><small>El área modular incluye las dimensiones del ladrillo más la junta considerada.</small></div></div>
+</div></section>
+
+<section id="geometria" class="panel"><div class="grid">
+<div class="card"><h2>Calculadora geométrica</h2><p class="hint">Selecciona la figura e ingresa sus dimensiones.</p>
+<div><label>Figura</label><select id="shape" onchange="shapeFields()"><option value="rect">Rectángulo</option><option value="tri">Triángulo</option><option value="circle">Círculo</option><option value="prism">Prisma rectangular (volumen)</option><option value="cylinder">Cilindro (volumen)</option></select></div>
+<div id="shapeInputs" class="fields" style="margin-top:12px"></div>
+<div class="actions"><button class="primary" onclick="calcShape()">Calcular</button></div><div id="shapeResult"></div>
+</div><div class="card"><h2>Aplicaciones</h2><ul class="muted"><li>Áreas de pisos y paredes.</li><li>Áreas de terrenos rectangulares o triangulares.</li><li>Volúmenes de excavaciones prismáticas.</li><li>Volúmenes aproximados de elementos cilíndricos.</li></ul><p class="muted">Todas las dimensiones se ingresan en metros.</p></div>
+</div></section>
+
+<section id="presupuesto" class="panel"><div class="grid">
+<div class="card"><h2>Agregar material al presupuesto</h2><p class="hint">Registra cantidades y precios unitarios en pesos colombianos (COP).</p>
+<div class="fields">
+<div><label>Material</label><select id="itemName"><option>Cemento</option><option>Arena</option><option>Grava</option><option>Ladrillo</option><option>Acero</option><option>Agua</option><option>Bloque</option><option>Otro material</option></select></div>
+<div><label>Unidad</label><select id="itemUnit"><option>bulto</option><option>m³</option><option>unidad</option><option>kg</option><option>tonelada</option><option>litro</option><option>viaje</option></select></div>
+<div><label>Cantidad</label><input id="itemQty" type="number" min="0" step="any"></div><div><label>Precio unitario (COP)</label><input id="itemPrice" type="number" min="0" step="any"></div>
+</div><div class="actions"><button class="primary" onclick="addItem()">Agregar al presupuesto</button><button class="secondary" onclick="clearBudget()">Vaciar lista</button></div>
+</div>
+<div class="card"><h2>Resumen</h2><div class="kpis"><div class="kpi"><span>Materiales registrados</span><b id="countItems">0</b></div><div class="kpi"><span>Subtotal</span><b id="subTotal">$0</b></div><div class="kpi"><span>Imprevistos (%)</span><input id="contingency" type="number" min="0" value="0" oninput="renderBudget()"></div></div><div class="total" id="grandTotal">Total: $0</div><div class="actions"><button class="secondary" onclick="window.print()">Imprimir / Guardar PDF</button><button class="secondary" onclick="exportCSV()">Exportar CSV</button></div></div>
+<div class="card full"><h2>Detalle del presupuesto</h2><div style="overflow-x:auto"><table><thead><tr><th>Material</th><th>Unidad</th><th>Cantidad</th><th>Precio unitario</th><th>Subtotal</th><th></th></tr></thead><tbody id="budgetRows"><tr><td colspan="6" class="muted">Todavía no has agregado materiales.</td></tr></tbody></table></div></div>
+</div></section>
+
+<section id="historial" class="panel"><div class="grid">
+<div class="card"><h2>Historial de cálculos</h2><p class="hint">Los últimos resultados se guardan en este navegador.</p><div id="historyList" class="muted">Aún no hay cálculos guardados.</div><div class="actions"><button class="secondary" onclick="clearHistory()">Borrar historial</button></div></div>
+<div class="card"><h2>Herramientas adicionales</h2><p class="muted">• Presupuesto exportable a CSV.</p><p class="muted">• Impresión o guardado del presupuesto en PDF.</p><p class="muted">• Historial local de operaciones.</p><p class="muted">• Interfaz adaptable a celular y computador.</p><p class="muted">• Proyecto identificado con un nombre.</p></div>
+</div></section>
+
+<div class="notice"><b>Importante:</b> CONSTRUOBRA es una herramienta de apoyo académico para estimaciones preliminares. No realiza diseños estructurales, certificaciones de seguridad, verificaciones normativas ni análisis de resistencia. Las cantidades reales deben validarse con especificaciones técnicas y asesoría profesional.</div>
+</main><footer>CONSTRUOBRA · Proyecto académico de apoyo para Ingeniería Civil</footer>
+<script>
+const $=id=>document.getElementById(id);
+const num=id=>Number($(id).value);
+const fmt=n=>new Intl.NumberFormat('es-CO',{maximumFractionDigits:3}).format(n);
+const money=n=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(n);
+let budget=JSON.parse(localStorage.getItem('co_budget')||'[]');
+let history=JSON.parse(localStorage.getItem('co_history')||'[]');
+function showResult(id,html){$(id).innerHTML=html}
+function logCalc(title,detail){history.unshift({title,detail,date:new Date().toLocaleString('es-CO')});history=history.slice(0,30);localStorage.setItem('co_history',JSON.stringify(history));renderHistory()}
+function validate(ids){for(const id of ids){if(!Number.isFinite(num(id))||num(id)<0){alert('Revisa los valores ingresados. Deben ser números iguales o mayores que cero.');return false}}return true}
+function calcConcrete(){if(!validate(['cL','cA','cH','cD']))return;let v=num('cL')*num('cA')*num('cH'),total=v*(1+num('cD')/100);showResult('concreteResult',`<div class="result"><strong>${fmt(total)} m³</strong><small>Volumen geométrico: ${fmt(v)} m³ · Con desperdicio: ${fmt(total)} m³</small></div>`);logCalc('Volumen de concreto',`${fmt(total)} m³`)}
+function calcMix(){if(!validate(['mVol','dryFactor','bag'])||num('bag')===0)return;let [c,a,g]=$('mix').value.split(',').map(Number),sum=c+a+g,dry=num('mVol')*num('dryFactor'),cementVol=dry*c/sum,sand=dry*a/sum,gravel=dry*g/sum,cementKg=cementVol*1440,bags=cementKg/num('bag');showResult('mixResult',`<div class="result"><strong>Materiales estimados</strong><div class="kpis"><div class="kpi"><span>Cemento</span><b>${fmt(bags)} bultos</b><small>${fmt( cementKg)} kg</small></div><div class="kpi"><span>Arena</span><b>${fmt(sand)} m³</b></div><div class="kpi"><span>Grava</span><b>${fmt(gravel)} m³</b></div></div><small>Factor seco: ${fmt(num('dryFactor'))} · Dosificación ${$('mix').value.replaceAll(',',':')}</small></div>`);logCalc('Materiales de concreto',`${fmt(bags)} bultos, ${fmt(sand)} m³ arena, ${fmt(gravel)} m³ grava`)}
+function calcBricks(){if(!validate(['wL','wH','bL','bH','joint','openings','brickWaste'])||num('bL')+num('joint')===0||num('bH')+num('joint')===0)return;let area=num('wL')*num('wH)-num('openings');if(area<0){alert('El área de aberturas no puede superar el área de la pared.');return}let mod=((num('bL')+num('joint'))/100)*((num('bH')+num('joint'))/100),base=area/mod,qty=Math.ceil(base*(1+num('brickWaste')/100));showResult('brickResult',`<div class="result"><strong>${qty} ladrillos</strong><small>Área neta: ${fmt(area)} m² · Sin desperdicio: ${Math.ceil(base)} unidades · Área modular: ${fmt(mod)} m²</small></div>`);logCalc('Cantidad de ladrillos',`${qty} unidades`)}
+function shapeFields(){let s=$('shape').value,fields={rect:[['x','Largo (m)'],['y','Ancho (m)']],tri:[['x','Base (m)'],['y','Altura (m)']],circle:[['x','Radio (m)']],prism:[['x','Largo (m)'],['y','Ancho (m)'],['z','Alto (m)']],cylinder:[['x','Radio (m)'],['z','Altura (m)']]};$('shapeInputs').innerHTML=fields[s].map(([id,label])=>`<div><label>${label}</label><input id="sh_${id}" type="number" min="0" step="any"></div>`).join('')}
+function calcShape(){let s=$('shape').value,ids={rect:['x','y'],tri:['x','y'],circle:['x'],prism:['x','y','z'],cylinder:['x','z']}[s].map(x=>'sh_'+x);for(let id of ids){if(!$(id).value||Number($(id).value)<0){alert('Completa todas las dimensiones con valores válidos.');return}}let v=(id)=>Number($(id).value),res=0,label='Área';if(s==='rect')res=v('sh_x')*v('sh_y');if(s==='tri')res=v('sh_x')*v('sh_y')/2;if(s==='circle')res=Math.PI*v('sh_x')**2;if(s==='prism'){res=v('sh_x')*v('sh_y')*v('sh_z');label='Volumen'}if(s==='cylinder'){res=Math.PI*v('sh_x')**2*v('sh_z');label='Volumen'}let unit=label==='Área'?'m²':'m³';showResult('shapeResult',`<div class="result"><strong>${fmt(res)} ${unit}</strong><small>${label} calculada</small></div>`);logCalc(label+' geométrica',`${fmt(res)} ${unit}`)}
+function addItem(){let name=$('itemName').value,unit=$('itemUnit').value,q=num('itemQty'),p=num('itemPrice');if(!Number.isFinite(q)||!Number.isFinite(p)||q<=0||p<0){alert('Ingresa una cantidad mayor que cero y un precio válido.');return}budget.push({name,unit,q,p});saveBudget();renderBudget()}
+function saveBudget(){localStorage.setItem('co_budget',JSON.stringify(budget))}
+function renderBudget(){$('countItems').textContent=budget.length;let subtotal=budget.reduce((s,x)=>s+x.q*x.p,0),extra=Math.max(0,Number($('contingency').value)||0),total=subtotal*(1+extra/100);$('subTotal').textContent=money(subtotal);$('grandTotal').textContent='Total: '+money(total);$('budgetRows').innerHTML=budget.length?budget.map((x,i)=>`<tr><td>${escapeHtml(x.name)}</td><td>${x.unit}</td><td>${fmt(x.q)}</td><td>${money(x.p)}</td><td>${money(x.q*x.p)}</td><td><button class="danger" onclick="removeItem(${i})">Quitar</button></td></tr>`).join(''):'<tr><td colspan="6" class="muted">Todavía no has agregado materiales.</td></tr>'}
+function removeItem(i){budget.splice(i,1);saveBudget();renderBudget()}
+function clearBudget(){if(confirm('¿Quieres vaciar el presupuesto?')){budget=[];saveBudget();renderBudget()}}
+function exportCSV(){if(!budget.length){alert('Agrega materiales antes de exportar.');return}let rows=[['Material','Unidad','Cantidad','Precio unitario COP','Subtotal COP'],...budget.map(x=>[x.name,x.unit,x.q,x.p,x.q*x.p])];let csv=rows.map(r=>r.join(';')).join('\n');let blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='presupuesto_construobra.csv';a.click();URL.revokeObjectURL(a.href)}
+function renderHistory(){$('historyList').innerHTML=history.length?history.map(x=>`<div class="history-item"><b>${escapeHtml(x.title)}</b><br>${escapeHtml(x.detail)}<br><small>${escapeHtml(x.date)}</small></div>`).join(''):'Aún no hay cálculos guardados.'}
+function clearHistory(){history=[];localStorage.removeItem('co_history');renderHistory()}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function clearFields(panel){document.querySelectorAll('#'+panel+' input').forEach(x=>{if(x.id==='cD')x.value=5;else x.value='' });if(panel==='concreto')showResult('concreteResult','');if(panel==='ladrillos')showResult('brickResult','')}
+document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));b.classList.add('active');$(b.dataset.tab).classList.add('active')}));
+$('projectName').value=localStorage.getItem('co_project')||'';$('projectName').addEventListener('input',e=>localStorage.setItem('co_project',e.target.value));
+shapeFields();renderBudget();renderHistory();
+</script>
+</body></html>
